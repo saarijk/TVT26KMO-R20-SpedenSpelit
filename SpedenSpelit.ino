@@ -11,9 +11,13 @@ volatile bool newTimerInterrupt = false;  // for timer interrupt handler
 
 void setup()
 {
-  /*
-    Initialize here all modules
-  */
+  // temp LED testing
+  initializeLeds();
+  clearAllLeds();
+
+  show1();
+  show2(10);
+  clearAllLeds();
 }
 
 void loop()
