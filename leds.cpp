@@ -4,10 +4,10 @@
 void initializeLeds()
 {
     // initialise analog pins A2, A3, A4, A5 to be used as outputs
-    pinMode(A2, OUTPUT);
-    pinMode(A3, OUTPUT);
-    pinMode(A4, OUTPUT);
-    pinMode(A5, OUTPUT); 
+    pinMode(6, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(9, OUTPUT);
+    pinMode(10, OUTPUT); 
 }
 
 void setLed(byte ledNumber)
@@ -16,16 +16,16 @@ void setLed(byte ledNumber)
     switch(ledNumber)
     {
         case 0:
-            digitalWrite(A2, HIGH);
+            digitalWrite(6, HIGH);
             break;
         case 1:
-            digitalWrite(A3, HIGH);
+            digitalWrite(7, HIGH);
             break;
         case 2:
-            digitalWrite(A4, HIGH);
+            digitalWrite(9, HIGH);
             break;
         case 3:
-            digitalWrite(A5, HIGH);
+            digitalWrite(10, HIGH);
             break;
         default:
             // do nothing?
@@ -38,23 +38,24 @@ void setLed(byte ledNumber)
 void clearAllLeds()
 {
     // clear all leds
-    digitalWrite(A2, LOW);
-    digitalWrite(A3, LOW);
-    digitalWrite(A4, LOW);
-    digitalWrite(A5, LOW);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+    digitalWrite(9, LOW);
+    digitalWrite(10, LOW);
 }
 
 void setAllLeds()
 {
     // set all leds
-    digitalWrite(A2, HIGH);
-    digitalWrite(A3, HIGH);
-    digitalWrite(A4, HIGH);
-    digitalWrite(A5, HIGH);
+    digitalWrite(6, HIGH);
+    digitalWrite(7, HIGH);
+    digitalWrite(9, HIGH);
+    digitalWrite(10, HIGH);
 }
 
 
 void show1()
+// start show
 {
     // light up leds as binary representation of 0-15
     // could use a loop: for each number, figure out which bits are 1
@@ -76,6 +77,7 @@ void show1()
 }
 
 void show2(int rounds)
+// end show
 {
     // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
