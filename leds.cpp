@@ -3,7 +3,7 @@
 
 void initializeLeds()
 {
-    // initialise analog pins A2, A3, A4, A5 to be used as outputs
+    // initialise analog pins 6,7,9,10 to be used as outputs
     pinMode(6, OUTPUT);
     pinMode(7, OUTPUT);
     pinMode(9, OUTPUT);
