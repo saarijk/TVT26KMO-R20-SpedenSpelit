@@ -13,6 +13,5 @@ uint32_t satunnaisluku_0_3() {
   return satunnaislukuTila; // palautetaan 0-3
 }
 uint8_t haeSatunnainenLed() {
-  satunnaisluku_0_3();
-  return satunnaislukuTila & 3;
+  return satunnaisluku_0_3() & 3;
 }
