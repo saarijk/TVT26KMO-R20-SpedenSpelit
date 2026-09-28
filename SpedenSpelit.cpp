@@ -47,7 +47,7 @@ void startTheGame() {
     }
     int nappiPainettu = read_button_press();  // Mikaelin tekemä buttons.cppn funktio mikä tuo painetun napin. NIMETTÄVÄ UUDELLEEN LUULTAVASTI
     if (checkGame(nappiPainettu, laskuri, nopeus)) {
-      endshow2();
+      endshow2(); // HUOM muista nimetä uudelleen valoshown mukaan
       break;
     }
   }
