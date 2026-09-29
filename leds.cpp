@@ -3,7 +3,7 @@
 
 void initializeLeds()
 {
-    // initialise analog pins 6,7,9,10 to be used as outputs
+    // initialise digital pins 6,7,9,10 to be used as outputs
     pinMode(6, OUTPUT);
     pinMode(7, OUTPUT);
     pinMode(9, OUTPUT);
@@ -54,7 +54,8 @@ void setAllLeds()
 }
 
 
-void show1()
+void 
+startshow()
 // start show
 {
     // light up leds as binary representation of 0-15
@@ -76,7 +77,7 @@ void show1()
     }
 }
 
-void show2(int rounds)
+void Endshow2(int rounds)
 // end show
 {
     // cycle through leds with increasing speed
