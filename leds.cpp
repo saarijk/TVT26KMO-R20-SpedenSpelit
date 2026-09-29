@@ -54,7 +54,7 @@ void setAllLeds()
 }
 
 
-void startshow()
+void startShow()
 // start show
 {
     // light up leds as binary representation of 0-15
@@ -76,7 +76,7 @@ void startshow()
     }
 }
 
-void Endshow1(int rounds)
+void EndShow1(int rounds)
 // end show, when pressed wrong button
 {
     // cycle through leds with increasing speed
@@ -91,3 +91,27 @@ void Endshow1(int rounds)
         }
     }
 }
+void EndShow2()
+// end show 2, when led calculator is full
+{
+    setAllLeds();
+    delay(1000);
+
+    clearAllLeds();
+    delay(250)
+
+    SetAlleds();
+    delay(1000);
+
+    digitalWrite(10, LOW);  // LED 4
+    delay(500);
+
+    digitalWrite(9, LOW);   // LED 3
+    delay(500);
+
+    digitalWrite(7, LOW);   // LED 2
+    delay(500);
+
+    digitalWrite(6, LOW);   // LED 1
+    delay(500);
+    }
