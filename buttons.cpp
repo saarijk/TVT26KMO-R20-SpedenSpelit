@@ -1,17 +1,31 @@
 #include "buttons.h"
 
+const byte BUTTON_0 = 2;
+const byte BUTTON_1 = 3;
+const byte BUTTON_2 = 4;
+const byte BUTTON_3 = 5;
 
-
-
-void initButtonsAndButtonInterrupts(void)
+void initializeButtons()
 {
-  // See requirements for this function from buttons.h
+    pinMode(BUTTON_0, INPUT_PULLUP);
+    pinMode(BUTTON_1, INPUT_PULLUP);
+    pinMode(BUTTON_2, INPUT_PULLUP);
+    pinMode(BUTTON_3, INPUT_PULLUP);
 }
 
-ISR(PCINT2_vect) {
-   /*
-     Here you implement logic for handling
-	 interrupts from 2,3,4,5 pins for Game push buttons
-	 and for pin 6 for start Game push button.
-   */
+byte readButton()
+{
+    if (digitalRead(BUTTON_0) == LOW)
+        return 0;
+
+    if (digitalRead(BUTTON_1) == LOW)
+        return 1;
+
+    if (digitalRead(BUTTON_2) == LOW)
+        return 2;
+
+    if (digitalRead(BUTTON_3) == LOW)
+        return 3;
+
+    return 255;
 }
