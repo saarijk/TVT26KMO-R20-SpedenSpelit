@@ -2,7 +2,7 @@
 
 namespace
 {
-const byte queueCapacity = 64;
+const byte queueCapacity = 32;
 volatile byte eventQueue[queueCapacity];
 volatile byte queueHead = 0;
 volatile byte queueTail = 0;
