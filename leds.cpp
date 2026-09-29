@@ -54,8 +54,7 @@ void setAllLeds()
 }
 
 
-void 
-startshow()
+void startshow()
 // start show
 {
     // light up leds as binary representation of 0-15
@@ -77,8 +76,8 @@ startshow()
     }
 }
 
-void Endshow2(int rounds)
-// end show
+void Endshow1(int rounds)
+// end show, when pressed wrong button
 {
     // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
