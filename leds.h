@@ -3,7 +3,7 @@
 #include <arduino.h>
 
 /*
-  initializeLeds() subroutine intializes analog pins A2,A3,A4,A5
+  initializeLeds() subroutine intializes digital pins 6,7,9,10
   to be used as outputs. Speden Spelit leds are connected to those
   pins. Uusi testi  
 */
@@ -11,10 +11,10 @@ void initializeLeds();
 
 /*
   setLed(byte) sets correct led number given as 0,1,2 or 3
-  led number 0 corresponds to led connected at Arduino pin A2
-  led number 1 => Arduino pin A3
-  led number 2 => Arduino pin A4
-  led number 3 => Arduino pin A5
+  led number 0 corresponds to led connected at Arduino pin 6
+  led number 1 => Arduino pin 7
+  led number 2 => Arduino pin 9
+  led number 3 => Arduino pin 10
   
   parameters:
   byte ledNumber is 0,1,2 or 3
