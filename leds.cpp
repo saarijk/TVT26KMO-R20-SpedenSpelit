@@ -53,6 +53,13 @@ void setAllLeds()
     digitalWrite(10, HIGH);
 }
 
+Void blink(int led)
+{
+    clearAllLeds();
+    SetLed(led);
+    delay(120);
+    clearAllLeds();
+}
 
 void startShow()
 // start show
