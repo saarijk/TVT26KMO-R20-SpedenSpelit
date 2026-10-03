@@ -53,10 +53,10 @@ void setAllLeds()
     digitalWrite(10, HIGH);
 }
 
-Void blink(int led)
+void blink(int led)
 {
     clearAllLeds();
-    SetLed(led);
+    setLed(led);
     delay(120);
     clearAllLeds();
 }
@@ -107,7 +107,7 @@ void EndShow2()
     clearAllLeds();
     delay(250)
 
-    SetAlleds();
+    setAlleds();
     delay(1000);
 
     digitalWrite(10, LOW);  // LED 4
