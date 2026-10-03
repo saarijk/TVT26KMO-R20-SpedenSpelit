@@ -83,7 +83,7 @@ void startShow()
     }
 }
 
-void EndShow1(int rounds)
+void endShow1(int rounds)
 // end show, when pressed wrong button
 {
     // cycle through leds with increasing speed
@@ -98,7 +98,7 @@ void EndShow1(int rounds)
         }
     }
 }
-void EndShow2()
+void endShow2()
 // end show 2, when led calculator is full
 {
     setAllLeds();
