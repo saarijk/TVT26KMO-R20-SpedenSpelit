@@ -84,7 +84,7 @@ void startShow()
 }
 
 void endShow1(int rounds)
-// end show, when pressed wrong button
+// end show 1, when pressed wrong button
 {
     // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
