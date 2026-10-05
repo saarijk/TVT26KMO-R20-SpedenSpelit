@@ -1,15 +1,12 @@
 #include "LedJarjestys.h"
 
-void lisaa_ledjarjestys(int led) { //lisätään ledarvo jonoon
-  enqueueEvent((byte)led);
+void lisaa_ledjarjestys(int ledArvo) { //lisätään ledarvo jonoon
+  enqueueEvent((byte)ledArvo);
 }
 
 int kurkista_ledjarjestys() { //kurkataan jonon ensimmäinen ledarvo
   byte event;
-  if (dequeueEvent(event)) {
-    enqueueEvent(event); // Peek by removing and re-adding to the tail
-    return event;
-  }
+  if (peekEvent(event)) return event;
   return -1;
 }
 

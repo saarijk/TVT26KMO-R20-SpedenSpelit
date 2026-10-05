@@ -3,7 +3,7 @@
 
 #include "event_queue.h"
 
-void lisaa_ledjarjestys(int led);
+void lisaa_ledjarjestys(int ledArvo);
 int kurkista_ledjarjestys();
 int pop_ledjarjestys();
 
