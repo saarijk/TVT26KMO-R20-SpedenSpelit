@@ -6,6 +6,7 @@
 void initializeEventQueue();
 bool enqueueEvent(byte event);
 bool dequeueEvent(byte& event);
+bool peekEvent(byte& event);
 byte eventQueueSize();
 
 #endif

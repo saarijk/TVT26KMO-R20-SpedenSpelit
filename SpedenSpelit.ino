@@ -1,78 +1,56 @@
-#include "display.h"
+#include <Arduino.h>
 #include "buttons.h"
 #include "leds.h"
-#include "SpedenSpelit.h"
+#include "display.h"
+#include "satunnaisluku.h"
 
-// tavoitteena se, että keskeytykset asettavat nämä liput, ja loop() käsittelee ne
-volatile int buttonNumber = -1;
-volatile bool newTimerInterrupt = false;
+// Pelit
+#include "MuistiSpeli.h"
+//#include "NoppaPeli.h"
 
 
+//int score = 0;
 void setup()
 {
-  // tähän tulee alustukset: initializeLeds(), initializeButtons(),
-  // initializeDisplay(), initializeEventQueue(), ja alustaSatunnaisluku()
-  // Konfiguroidaan timeri kun peli on valmis alkamaan
-
-  // Väliaikainen LED demo
-  initializeLeds();
-  clearAllLeds();
-
-  show1();
-  show2(10);
-  clearAllLeds();
+    //int score = 0;
+    //setupDisplay();
+    initializeDisplay();
+    initButtonsAndButtonInterrupts();
+    initializeLeds();
+    clearAllLeds();
+    alustaSatunnaisluku();
+    //testSegmentsIndividually();
+    // Näytetään alkuun 00
+    //showScore(0);
 }
 
 void loop()
 {
-  // toimii koordinaattorina
-  // tarkistaa onko nappia painettu ja onko timeri-interrupt tapahtunut
-  // toiminnallisuus SpedenSpelit.cpp:ssä, loop() vain kutsuu funktioita
 
-  if(buttonNumber>=0)
-  {
-     // start the game if buttonNumber == 4
-     // check the game if 0<=buttonNumber<4
-  }
+    ///setScore(score);
+    int nappi = readButton();
 
-  if(newTimerInterrupt == true)
-  {
-     // new random number must be generated
-     // and corresponding let must be activated
-  }
-}
-
-// Timerin alustuksen ja keskeytyskäsittelijän voisi siirtää SpedenSpelit.cpp:hen
-void initializeTimer(void)
-{
-	// see requirements for the function from SpedenSpelit.h
-}
-ISR(TIMER1_COMPA_vect)
-{
-  /*
-  Communicate to loop() that it's time to make new random number.
-  Increase timer interrupt rate after 10 interrupts.
-  */
-  
-}
+    if (nappi == -1)
+        return; 
 
 
-// toiminnallisuuden voisi siirtää SpedenSpelit.cpp:hen
-// tässä tiedostossa säilytetään vain alustukset ja 
-// timeri-interruptin määrittely
-void checkGame(byte nbrOfButtonPush)
-{
-	// see requirements for the function from SpedenSpelit.h
-}
+    // Käynnistä MuistiSpeli
 
+    if (digitalRead(2) == LOW && digitalRead(5) == LOW)
+    {
+        show2(5);          // LED-valoshow ennen pelin alkua
+        startTheGame();   // Muistipeli
+        return;
+    }
 
-void initializeGame()
-{
-	// see requirements for the function from SpedenSpelit.h
-}
+    // Käynnistä NoppaSpeli (napit 2 + 3)
+    if (digitalRead(4) == LOW && digitalRead(3) == LOW)
+    {
+        show2(15);          // LED-valoshow ennen pelin alkua
+        //NoppaSpeli();  // Noppapeli
+        return;
+    }
 
-void startTheGame()
-{
-   // see requirements for the function from SpedenSpelit.h
+    // Muuten odotetaan uusia painalluksia
 }
 
