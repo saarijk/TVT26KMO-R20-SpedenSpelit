@@ -5,7 +5,7 @@
 
 void initializeButtons();
 
-byte readButton();
+int readButton();
 
 bool startButtonsPressed();
 

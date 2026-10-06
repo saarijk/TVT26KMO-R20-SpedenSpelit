@@ -15,10 +15,10 @@ void setup()
     //int score = 0;
     //setupDisplay();
     initializeDisplay();
-    initButtonsAndButtonInterrupts();
+    initializeButtons();
     initializeLeds();
     clearAllLeds();
-    alustaSatunnaisluku();
+   // alustaSatunnaisluku();
     //testSegmentsIndividually();
     // Näytetään alkuun 00
     //showScore(0);
@@ -38,7 +38,7 @@ void loop()
 
     if (digitalRead(2) == LOW && digitalRead(5) == LOW)
     {
-        show2(5);          // LED-valoshow ennen pelin alkua
+        startShow();          // LED-valoshow ennen pelin alkua
         startTheGame();   // Muistipeli
         return;
     }
@@ -46,7 +46,7 @@ void loop()
     // Käynnistä NoppaSpeli (napit 2 + 3)
     if (digitalRead(4) == LOW && digitalRead(3) == LOW)
     {
-        show2(15);          // LED-valoshow ennen pelin alkua
+        startShow();          // LED-valoshow ennen pelin alkua
         //NoppaSpeli();  // Noppapeli
         return;
     }

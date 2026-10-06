@@ -1,91 +1,123 @@
+
 #include "display.h"
+#include <avr/io.h>
+#include <stdint.h>
 
-// 74HC595 pins
-const uint8_t LATCH_PIN = 8;
-const uint8_t DATA_PIN  = 11;
-const uint8_t CLOCK_PIN = 12;
+#define LATCH_PIN  PB0
+#define DATA_PIN   PB3
+#define CLOCK_PIN  PB4
 
-// Segments for 0-9 and decimal dot
+
 const uint8_t SEGMENTS[] =
 {
-  B01111101, // 0
-  B00001100, // 1
-  B10110101, // 2
-  B10011101, // 3
-  B11001100, // 4
-  B11011001, // 5
-  B11111001, // 6
-  B00001101, // 7
-  B11111101, // 8
-  B11011101, // 9
-  B00000010  // .
+  0b01111101,   // 0
+  0b00001100,   // 1
+  0b10110101,   // 2
+  0b10011101,   // 3
+  0b11001100,   // 4
+  0b11011001,   // 5
+  0b11111001,   // 6
+  0b00001101,   // 7
+  0b11111101,   // 8
+  0b11011101,   // 9
+  0b00000010    // decimal point
 };
 
-// Display selection
-const uint8_t LEFT_ON  = B11111101;
-const uint8_t RIGHT_ON = B11111011;
-const uint8_t BOTH_OFF = B11111111;
+const uint8_t LEFT_ON  = 0b11111101;
+const uint8_t RIGHT_ON = 0b11111011;
+const uint8_t BOTH_OFF = 0b11111111;
 
-// display score
+
 volatile uint16_t currentScore = 0;
 
-volatile uint8_t leftSegments = SEGMENTS[0];
+volatile uint8_t leftSegments  = SEGMENTS[0];
 volatile uint8_t rightSegments = SEGMENTS[0];
 
 volatile bool leftDisplayActive = true;
 
-unsigned long lastDisplayUpdate = 0;
-
-const unsigned long DISPLAY_INTERVAL = 2;
-
-// Send one byte manually to the 74HC595.
 void sendByte(uint8_t data)
 {
   for (int8_t bit = 7; bit >= 0; bit--)
   {
-    digitalWrite(CLOCK_PIN, LOW);
+    // CLOCK LOW
+    PORTB &= ~(1 << CLOCK_PIN);
 
+
+    // Set DATA according to current bit
     if (data & (1 << bit))
     {
-      digitalWrite(DATA_PIN, HIGH);
+      PORTB |= (1 << DATA_PIN);
     }
     else
     {
-      digitalWrite(DATA_PIN, LOW);
+      PORTB &= ~(1 << DATA_PIN);
     }
 
-    digitalWrite(CLOCK_PIN, HIGH);
+
+    // CLOCK HIGH
+    // 74HC595 reads the bit here.
+    PORTB |= (1 << CLOCK_PIN);
   }
+
+
+  // CLOCK LOW
+  PORTB &= ~(1 << CLOCK_PIN);
 }
 
 
-// Send both 74HC595 bytes and update their outputs.
+// ============================================================
+// Send two bytes to the two 74HC595 circuits
+// ============================================================
+
 void sendToRegisters(uint8_t segmentData, uint8_t displayData)
 {
-  digitalWrite(LATCH_PIN, LOW);
+  // LATCH LOW
+  PORTB &= ~(1 << LATCH_PIN);
 
+
+  // First byte goes through both registers.
   sendByte(displayData);
   sendByte(segmentData);
 
-  digitalWrite(LATCH_PIN, HIGH);
+
+  // LATCH HIGH
+  PORTB |= (1 << LATCH_PIN);
 }
 
-// Display outputs
+
+// ============================================================
+// Initialize display
+// ============================================================
+
 void initializeDisplay(void)
 {
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(DATA_PIN, OUTPUT);
-  pinMode(CLOCK_PIN, OUTPUT);
+  // D8, D11 and D12 as outputs
 
-  digitalWrite(LATCH_PIN, LOW);
-  digitalWrite(DATA_PIN, LOW);
-  digitalWrite(CLOCK_PIN, LOW);
+  DDRB |= (1 << LATCH_PIN);
+  DDRB |= (1 << DATA_PIN);
+  DDRB |= (1 << CLOCK_PIN);
 
-  // Turn both displays off initially.
+
+  // Initial states
+
+  PORTB &= ~(1 << LATCH_PIN);
+  PORTB &= ~(1 << DATA_PIN);
+  PORTB &= ~(1 << CLOCK_PIN);
+
+
+  // Both displays off
+
   sendToRegisters(SEGMENTS[0], BOTH_OFF);
+
+
+  leftDisplayActive = true;
 }
 
-// Write one digit to the display register.
+
+// ============================================================
+// Write one digit
+// ============================================================
+
 void writeByte(uint8_t number, bool last)
 {
   if (number > 9)
@@ -93,18 +125,31 @@ void writeByte(uint8_t number, bool last)
     number = 0;
   }
 
-  digitalWrite(LATCH_PIN, LOW);
 
+  // LATCH LOW
+  PORTB &= ~(1 << LATCH_PIN);
+
+
+  // Both displays off
   sendByte(BOTH_OFF);
+
+
+  // Send segment data
   sendByte(SEGMENTS[number]);
 
+
+  // LATCH HIGH
   if (last)
   {
-    digitalWrite(LATCH_PIN, HIGH);
+    PORTB |= (1 << LATCH_PIN);
   }
 }
 
-// Set the two digits to be displayed.
+
+// ============================================================
+// Set two digits
+// ============================================================
+
 void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
 {
   if (tens > 9)
@@ -117,11 +162,16 @@ void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
     ones = 0;
   }
 
+
   leftSegments = SEGMENTS[tens];
   rightSegments = SEGMENTS[ones];
 }
 
-// Set the score value.
+
+// ============================================================
+// Set score
+// ============================================================
+
 void setScore(int score)
 {
   if (score < 0)
@@ -129,70 +179,99 @@ void setScore(int score)
     score = 0;
   }
 
+
   currentScore = score;
+
 
   uint8_t displayValue = score % 100;
 
   uint8_t tens = displayValue / 10;
   uint8_t ones = displayValue % 10;
 
+
   uint8_t tensSegments = SEGMENTS[tens];
   uint8_t onesSegments = SEGMENTS[ones];
 
-  // if score over 100, show dot on left display
+
+  // 100...199
+  // Decimal point on left display
+
   if (score >= 100 && score < 200)
   {
     tensSegments |= SEGMENTS[10];
   }
 
-  // if score over 200, show dots on bouth displays
+
+  // 200 or more
+  // Decimal point on both displays
+
   if (score >= 200)
   {
     tensSegments |= SEGMENTS[10];
     onesSegments |= SEGMENTS[10];
   }
 
+
   leftSegments = tensSegments;
   rightSegments = onesSegments;
-  updateDisplay();
 }
+
+
+// ============================================================
+// Show result
+// ============================================================
 
 void showResult(byte result)
 {
   setScore(result);
 }
 
-// Update the score on display.
+// Update display
+
 void updateDisplay(void)
 {
+  static unsigned long lastDisplayUpdate = 0;
+
   unsigned long currentTime = millis();
 
-  if (currentTime - lastDisplayUpdate < DISPLAY_INTERVAL)
+
+  if (currentTime - lastDisplayUpdate < 2)
   {
     return;
   }
 
+
   lastDisplayUpdate = currentTime;
+
 
   if (leftDisplayActive)
   {
-    // Turn both displays off before changing segment data.
+    // Turn both displays off
     sendToRegisters(leftSegments, BOTH_OFF);
 
-    // Enable left display.
+
+    // Turn left display on
     sendToRegisters(leftSegments, LEFT_ON);
+
 
     leftDisplayActive = false;
   }
   else
   {
-    // Turn both displays off before changing segment data.
+    // Turn both displays off
     sendToRegisters(rightSegments, BOTH_OFF);
 
-    // Enable right display.
+
+    // Turn right display on
     sendToRegisters(rightSegments, RIGHT_ON);
+
 
     leftDisplayActive = true;
   }
 }
+  void clearDisplay(void)
+{
+    sendToRegisters(SEGMENTS[0], BOTH_OFF);
+}
+
 

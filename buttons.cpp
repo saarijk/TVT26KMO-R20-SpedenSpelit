@@ -13,7 +13,7 @@ void initializeButtons()
     pinMode(BUTTON_3, INPUT_PULLUP);
 }
 
-byte readButton()
+int readButton()
 {
     if (digitalRead(BUTTON_0) == LOW)
         return 0;
@@ -27,5 +27,5 @@ byte readButton()
     if (digitalRead(BUTTON_3) == LOW)
         return 3;
 
-    return 255;
+    return -1;
 }

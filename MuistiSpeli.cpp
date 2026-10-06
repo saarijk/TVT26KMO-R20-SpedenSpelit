@@ -22,9 +22,9 @@ bool checkGame(int nappiPainettu, int& laskuri, int& nopeus) { //checkGame himme
     }
   }
 
-  // if (ledArvo != -1 && nappiPainettu != -1 && ledArvo != nappiPainettu) { // jos väärä painallus
-  //   gameOver = true;
-  // }
+ // if (ledArvo != -1 && nappiPainettu != -1 && ledArvo != nappiPainettu) { // jos väärä painallus
+ //gameOver = true;
+  //}
 
   if (eventQueueSize() > 30) {
     gameOver = true;
@@ -45,19 +45,25 @@ void startTheGame() {
   int nopeus = 1000;
   int laskuri = 0;
 
-  while (!gameOver) {
+  while (!gameOver)
+{
     setScore(laskuri);
-    //updateDisplay(laskuri);
-    if (millis() - aikaaKulunut > nopeus) { // jatkuva ledejen lisäys
-      int uusiLed = haeSatunnainenLed();
-      lisaa_ledjarjestys(uusiLed);
-      blink(uusiLed);
-      aikaaKulunut = millis();
+    updateDisplay();
+
+    if (millis() - aikaaKulunut > nopeus)
+    {
+        int uusiLed = haeSatunnainenLed();
+        lisaa_ledjarjestys(uusiLed);
+        blink(uusiLed);
+        aikaaKulunut = millis();
     }
-    int nappiPainettu = readButton();  // Mikaelin tekemä buttons.cppn funktio mikä tuo painetun napin. NIMETTÄVÄ UUDELLEEN LUULTAVASTI
-    if (checkGame(nappiPainettu, laskuri, nopeus)) {
-      show2(5); // mikä ikinä nimeksi tulle. HUOM MUISTA MUUTTAA
-      break;
+
+    nappiPainettu = readButton();
+
+    if (checkGame(nappiPainettu, laskuri, nopeus))
+    {
+        endShow1(5);
+        break;
     }
   }
 }
