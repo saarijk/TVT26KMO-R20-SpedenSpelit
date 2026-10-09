@@ -4,9 +4,7 @@
 #include <Arduino.h>
 
 void initializeButtons();
-
-byte readButton();
-
-bool startButtonsPressed();
+int readButton();
+void initButtonsAndButtonInterrupts(void);
 
 #endif

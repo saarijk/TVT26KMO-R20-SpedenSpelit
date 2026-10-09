@@ -1,4 +1,4 @@
-#include "event_queue.h"
+#include "eventQueue.h"
 
 namespace
 {
@@ -37,6 +37,17 @@ bool dequeueEvent(byte& event)
 
 	event = eventQueue[queueTail];
 	queueTail = (queueTail + 1) % queueCapacity;
+	return true;
+}
+
+bool peekEvent(byte& event)
+{
+	if (queueTail == queueHead)
+	{
+		return false;
+	}
+
+	event = eventQueue[queueTail];
 	return true;
 }
 
