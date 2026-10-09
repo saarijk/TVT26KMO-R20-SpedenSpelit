@@ -7,7 +7,7 @@
 #include <util/atomic.h>
 
 volatile int buttonNumber = -1;
-volatile bool newTimerInterrupt = false;
+volatile uint16_t timerTicks = 0;
 
 namespace
 {
@@ -74,7 +74,7 @@ void initializeTimer(void)
   OCR1A = initialTimerCompare; 
   TIFR1 = _BV(OCF1A); 
   TIMSK1 &= ~_BV(OCIE1A);
-  newTimerInterrupt = false;
+  timerTicks = 0;
 }
 
 // reset Timer1 and start it with its initial one-second interval
@@ -85,7 +85,7 @@ void startTimer(void)
   TCNT1 = 0; 
   OCR1A = initialTimerCompare; 
   TIFR1 = _BV(OCF1A); 
-  newTimerInterrupt = false;
+  timerTicks = 0;
   TIMSK1 |= _BV(OCIE1A);
   TCCR1B = _BV(WGM12) | _BV(CS12) | _BV(CS10);
 }
@@ -117,13 +117,13 @@ void stopTimer(void)
   TCCR1B = _BV(WGM12); 
   TIMSK1 &= ~_BV(OCIE1A); 
   TIFR1 = _BV(OCF1A); 
-  newTimerInterrupt = false;
+  timerTicks = 0;
 }
 
 // runs when Timer1 reaches its compare value and signals that an interval passed
 ISR(TIMER1_COMPA_vect)
 {
-  newTimerInterrupt = true; 
+  timerTicks++;
 }
 
 // checkGame, initializeGame, startTheGame siirretty SpedenSpelit.cpp:hen
