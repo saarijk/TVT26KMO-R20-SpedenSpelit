@@ -1,57 +1,72 @@
 #include "SpedenSpelit.h"
-#include "LedJarjestys.h"
-#include "Satunnaisluku.h"
+#include "ledSequence.h"
+#include "randomNumber.h"
 #include "buttons.h"
 //#include "Start_game.h" // unkommataan, kun pelin aloitus on valmis
 //#include "endgame.h" //unkommataan, kun pelin päättyminen lisätty 
 #include "display.h"
 #include "leds.h"
 
-
+extern void initializeTimer(void);
+extern void startTimer(void);
+extern void speedUpTimer(void);
+extern void stopTimer(void);
+extern volatile uint16_t timerTicks;
 
 bool gameOver = false;
-bool checkGame(int nappiPainettu, int& laskuri, int& nopeus) { //checkGame himmeli. Pyörähtää aina napin painalluksella niin kauan kunhan eventQueySize on alle 30
 
-  int ledArvo = kurkista_ledjarjestys();
+bool checkGame(int pressedButton, int& counter) { //checkGame helper. It rotates every time a button is pressed as long as eventQueueSize is below 30.
 
-  if (ledArvo != -1 && ledArvo == nappiPainettu) { // jos oikea painallus
-    pop_ledjarjestys(); //paukautetaan jonosta seuraava
-    laskuri++;
-    update_score(laskuri); // päivitetään näytölle pisteet. Nimeäminen mitä ikinä Eetu keksii display.h nimetä.
+  int ledValue = peekLed();
 
-    if (laskuri % 10 == 0) // jos 10 oikeaa painallusta, niin peli nopeutuu
+  if (ledValue != -1 && ledValue == pressedButton) { // correct button press
+    dequeueLed(); // remove the next value from the queue
+    counter++;
+    setScore(counter); // update the score shown on the display
+
+    if (counter % 10 == 0) // every 10 correct presses, speed up the game
     {
-      nopeus = max(100, (int)(nopeus * 0.9)); // ledejen vilkkuminen. Ei varmuutta toimiiko näin vai pitääkö muuttaa esim "- 100"
+      speedUpTimer();
     }
   }
+  // TODO: handle a wrong button press
 
   if (eventQueueSize() > 30) {
     gameOver = true;
+    stopTimer();
+    timerTicks = 0;
   }
   return gameOver;
 }
+
 void startTheGame() {
-  
   initializeLeds();
-  initButtonsAndButtonInterrupts(); //näytön alustus tulleepi tähän. MUISTA TÄYDENTÄÄ!! initButtonsAndButtonInterrupts
-  initializeEventQueue(); // jonon alustus
-  alustaSatunnaisluku();
-  unsigned long aikaaKulunut = 0;
-  int nopeus = 1000;
-  int laskuri = 0;
+  initButtonsAndButtonInterrupts();
+  initializeEventQueue();
+  initializeRandomNumber();
+  initializeTimer();
+
+  gameOver = false;
+  timerTicks = 0;
+  int counter = 0;
+  int pressedButton = -1;
+
+  startTimer();
 
   while (!gameOver) {
-    if (millis() - aikaaKulunut > nopeus) {
-      lisaa_ledjarjestys(haeSatunnainenLed());
-      aikaaKulunut = millis();
+    while (timerTicks > 0) {
+      timerTicks--;
+      enqueueLed(getRandomLed());
     }
-    int nappiPainettu = read_button_press();  // Mikaelin tekemä buttons.cppn funktio mikä tuo painetun napin. NIMETTÄVÄ UUDELLEEN LUULTAVASTI
-    if (checkGame(nappiPainettu, laskuri, nopeus)) {
-      endshow2(); // HUOM muista nimetä uudelleen valoshown mukaan
+
+    pressedButton = readButton();
+
+    if (checkGame(pressedButton, counter)) {
+      stopTimer();
+      timerTicks = 0;
+      endShow1(5);
       break;
     }
   }
 }
-
-
 

@@ -1,78 +1,129 @@
-#include "display.h"
+#include "MuistiSpeli.h"
 #include "buttons.h"
+#include "display.h"
+#include "eventQueue.h"
 #include "leds.h"
-#include "SpedenSpelit.h"
+#include "randomNumber.h"
+#include <util/atomic.h>
 
-// tavoitteena se, että keskeytykset asettavat nämä liput, ja loop() käsittelee ne
 volatile int buttonNumber = -1;
-volatile bool newTimerInterrupt = false;
+volatile uint16_t timerTicks = 0;
 
+namespace
+{
+  // constants for Timer1 configuration
+  // starting comparison value
+  const uint16_t initialTimerCompare = (F_CPU / 1024UL) - 1;
+  // lowest comparison value, corresponding to 0.1 sec 
+  // sets the limit on how fast the timer can go 
+  const uint16_t minimumTimerCompare = (F_CPU / 10240UL) - 1;
+}
 
+// prep everything
 void setup()
 {
-  // tähän tulee alustukset: initializeLeds(), initializeButtons(),
-  // initializeDisplay(), initializeEventQueue(), ja alustaSatunnaisluku()
-  // Konfiguroidaan timeri kun peli on valmis alkamaan
-
-  // Väliaikainen LED demo
+  
   initializeLeds();
   clearAllLeds();
-
-  show1();
-  show2(10);
-  clearAllLeds();
+  initializeButtons();
+  initializeDisplay();
+  // initializeEventQueue();
+  initializeRandomNumber();
+  initializeTimer();
+  Serial.begin(9600);
 }
 
+// read the latest button event and handle a game start or player input
 void loop()
 {
-  // toimii koordinaattorina
-  // tarkistaa onko nappia painettu ja onko timeri-interrupt tapahtunut
-  // toiminnallisuus SpedenSpelit.cpp:ssä, loop() vain kutsuu funktioita
-
-  if(buttonNumber>=0)
+  int pressedButton;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   {
-     // start the game if buttonNumber == 4
-     // check the game if 0<=buttonNumber<4
+    pressedButton = buttonNumber;
+    buttonNumber = -1;
   }
 
-  if(newTimerInterrupt == true)
+  // Check button combinations before handling individual button events.
+  if (digitalRead(2) == LOW && digitalRead(5) == LOW)
   {
-     // new random number must be generated
-     // and corresponding let must be activated
+    startShow();
+    startTheGame();
+    return;
+  }
+
+  if (digitalRead(4) == LOW && digitalRead(3) == LOW)
+  {
+    startShow();
+    // NoppaSpeli(); // Noppapeli
+    return;
+  }
+
+  if (pressedButton == 3)
+  {
+    endShow1(5);
+    startTheGame();
   }
 }
 
-// Timerin alustuksen ja keskeytyskäsittelijän voisi siirtää SpedenSpelit.cpp:hen
+// configure Timer1 but leave it stopped until a game starts
 void initializeTimer(void)
 {
-	// see requirements for the function from SpedenSpelit.h
+  TCCR1A = 0;
+  TCCR1B = _BV(WGM12); 
+  TCNT1 = 0; 
+  OCR1A = initialTimerCompare; 
+  TIFR1 = _BV(OCF1A); 
+  TIMSK1 &= ~_BV(OCIE1A);
+  timerTicks = 0;
 }
+
+// reset Timer1 and start it with its initial one-second interval
+// call this after game setup, just before the gameplay loop
+// so the first timer interval starts with play
+void startTimer(void)
+{
+  TCNT1 = 0; 
+  OCR1A = initialTimerCompare; 
+  TIFR1 = _BV(OCF1A); 
+  timerTicks = 0;
+  TIMSK1 |= _BV(OCIE1A);
+  TCCR1B = _BV(WGM12) | _BV(CS12) | _BV(CS10);
+}
+
+// shorten the timer interval by 10%, down to a minimum of 0.1 seconds
+void speedUpTimer(void)
+{
+  uint32_t nextCompare = (static_cast<uint32_t>(OCR1A) * 9UL) / 10UL;
+  if (nextCompare < minimumTimerCompare)
+  {
+    nextCompare = minimumTimerCompare;
+  }
+
+  // prevent the timer interrupt from changing the counter during this update
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    OCR1A = static_cast<uint16_t>(nextCompare);
+
+    if (TCNT1 >= nextCompare)
+    {
+      TCNT1 = 0;
+    }
+  }
+}
+
+// stop Timer1 and clear its pending interrupt event
+void stopTimer(void)
+{
+  TCCR1B = _BV(WGM12); 
+  TIMSK1 &= ~_BV(OCIE1A); 
+  TIFR1 = _BV(OCF1A); 
+  timerTicks = 0;
+}
+
+// runs when Timer1 reaches its compare value and signals that an interval passed
 ISR(TIMER1_COMPA_vect)
 {
-  /*
-  Communicate to loop() that it's time to make new random number.
-  Increase timer interrupt rate after 10 interrupts.
-  */
-  
+  timerTicks++;
 }
 
-
-// toiminnallisuuden voisi siirtää SpedenSpelit.cpp:hen
-// tässä tiedostossa säilytetään vain alustukset ja 
-// timeri-interruptin määrittely
-void checkGame(byte nbrOfButtonPush)
-{
-	// see requirements for the function from SpedenSpelit.h
-}
-
-
-void initializeGame()
-{
-	// see requirements for the function from SpedenSpelit.h
-}
-
-void startTheGame()
-{
-   // see requirements for the function from SpedenSpelit.h
-}
-
+// checkGame, initializeGame, startTheGame siirretty SpedenSpelit.cpp:hen

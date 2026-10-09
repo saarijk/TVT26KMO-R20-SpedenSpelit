@@ -1,5 +1,5 @@
 #include "buttons.h"
-#include "event_queue.h"
+#include "eventQueue.h"
 #include <avr/interrupt.h>
 
 const byte BUTTON_0 = 2;
