@@ -36,6 +36,7 @@ void setup()
 // read the latest button event and handle a game start or player input
 void loop()
 {
+  
   int pressedButton;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   {
@@ -45,8 +46,8 @@ void loop()
 
   if (pressedButton == 3)
   {
-    show2(5);
-    startTheGame();
+      startShow(5);
+      startTheGame();
   }
 }
 

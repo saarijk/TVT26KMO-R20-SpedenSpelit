@@ -52,57 +52,7 @@ void setAllLeds()
     digitalWrite(9, HIGH);
     digitalWrite(10, HIGH);
 }
-// void blink(int led) {
-//     static unsigned long flashStart = 0;
-//     static bool flashing = false;
-//     static int flashLed = -1;
 
-//     if (!flashing) {
-//         flashing = true;
-//         flashLed = led;
-//         flashStart = millis();
-//         setLed(led);
-//     }
-
-//     if (flashing && millis() - flashStart > 120) {
-//         clearAllLeds();
-//         flashing = false;
-//         flashLed = -1;
-//     }
-// }
-
-void startShow()
-{
-    static int i = 0;                  
-    static unsigned long previousMillis = 0;
-    static bool showRunning = true;
-    const unsigned long interval = 500;
- 
-    if (!showRunning) {
-        return;
-    }
- 
-    unsigned long currentMillis = millis();
- 
-    if (currentMillis - previousMillis >= interval)
-    {
-        previousMillis = currentMillis;
- 
-        clearAllLeds();
- 
-        if (i & 0x01) setLed(0); // 1 = 0001
-        if (i & 0x02) setLed(1); // 2 = 0010
-        if (i & 0x04) setLed(2); // 4 = 0100
-        if (i & 0x08) setLed(3); // 8 = 1000
- 
-        i++;
- 
-        if (i >= 16)
-        {
-            showRunning = false;
-        }
-    }
-}
 void endShow1(int rounds)
 {
     for (int round = 0; round < rounds; round++)
@@ -132,7 +82,7 @@ void endShow1(int rounds)
     }
     //clearDisplay();
 }
-void show2(int rounds)
+void startShow(int rounds)
 {
     // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
