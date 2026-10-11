@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 void startTheGame(void);
-bool checkGame(int nappiPainettu, int& laskuri, int& nopeus);
+bool checkGame(int nappiPainettu, int& laskuri, unsigned long& ledOnDuration);
 void startTimer(void);
 void stopTimer(void);
 void speedUpTimer(void);
