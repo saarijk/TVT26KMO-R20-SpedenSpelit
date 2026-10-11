@@ -26,7 +26,6 @@ const uint8_t LEFT_ON  = 0b11111101;
 const uint8_t RIGHT_ON = 0b11111011;
 const uint8_t BOTH_OFF = 0b11111111;
 
-
 volatile uint16_t currentScore = 0;
 
 volatile uint8_t leftSegments  = SEGMENTS[0];
@@ -41,7 +40,6 @@ void sendByte(uint8_t data)
     //CLOCK LOW
     PORTB &= ~(1 << CLOCK_PIN);
 
-
     // Set DATA according to current bit
     if (data & (1 << bit))
     {
@@ -52,18 +50,14 @@ void sendByte(uint8_t data)
       PORTB &= ~(1 << DATA_PIN);
     }
 
-
     //CLOCK HIGH
     //74HC595 reads the bit here.
     PORTB |= (1 << CLOCK_PIN);
   }
 
-
   //CLOCK LOW
   PORTB &= ~(1 << CLOCK_PIN);
 }
-
-
 
 // Send two bytes to the two 74HC595 circuits
 void sendToRegisters(uint8_t segmentData, uint8_t displayData)
@@ -71,16 +65,13 @@ void sendToRegisters(uint8_t segmentData, uint8_t displayData)
   //LATCH LOW
   PORTB &= ~(1 << LATCH_PIN);
 
-
   //First byte goes through both registers.
   sendByte(displayData);
   sendByte(segmentData);
 
-
   //LATCH HIGH
   PORTB |= (1 << LATCH_PIN);
 }
-
 
 // Initialize display
 void initializeDisplay(void)
@@ -90,21 +81,16 @@ void initializeDisplay(void)
   DDRB |= (1 << DATA_PIN);
   DDRB |= (1 << CLOCK_PIN);
 
-
   // Initial states
   PORTB &= ~(1 << LATCH_PIN);
   PORTB &= ~(1 << DATA_PIN);
   PORTB &= ~(1 << CLOCK_PIN);
 
-
   // Both displays off
   sendToRegisters(SEGMENTS[0], BOTH_OFF);
 
-
   leftDisplayActive = true;
 }
-
-
 
 // Write one digit
 void writeByte(uint8_t number, bool last)
@@ -114,18 +100,14 @@ void writeByte(uint8_t number, bool last)
     number = 0;
   }
 
-
   //LATCH LOW
   PORTB &= ~(1 << LATCH_PIN);
-
 
   //Both displays off
   sendByte(BOTH_OFF);
 
-
   //Send segment data
   sendByte(SEGMENTS[number]);
-
 
   //LATCH HIGH
   if (last)
@@ -133,8 +115,6 @@ void writeByte(uint8_t number, bool last)
     PORTB |= (1 << LATCH_PIN);
   }
 }
-
-
 
 // Set two digits
 void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
@@ -149,12 +129,9 @@ void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
     ones = 0;
   }
 
-
   leftSegments = SEGMENTS[tens];
   rightSegments = SEGMENTS[ones];
 }
-
-
 
 //Set score
 void setScore(int score)
@@ -163,21 +140,15 @@ void setScore(int score)
   {
     score = 0;
   }
-
-
   currentScore = score;
-
-
   uint8_t displayValue = score % 100;
 
   uint8_t tens = displayValue / 10;
   uint8_t ones = displayValue % 10;
 
-
   uint8_t tensSegments = SEGMENTS[tens];
   uint8_t onesSegments = SEGMENTS[ones];
-
-
+  
   // 100...199
   // Decimal point on left display
 
@@ -185,7 +156,6 @@ void setScore(int score)
   {
     tensSegments |= SEGMENTS[10];
   }
-
 
   // 200 or more
   // Decimal point on both displays
@@ -196,13 +166,10 @@ void setScore(int score)
     onesSegments |= SEGMENTS[10];
   }
 
-
   leftSegments = tensSegments;
   rightSegments = onesSegments;
   updateDisplay();
 }
-
-
 
 //Show game result on segment displays
 void showResult(byte result)
@@ -224,19 +191,15 @@ void updateDisplay(void)
     return;
   }
 
-
   lastDisplayUpdate = currentTime;
-
 
   if (leftDisplayActive)
   {
     // Turn both displays off
     sendToRegisters(leftSegments, BOTH_OFF);
 
-
     // Turn left display on
     sendToRegisters(leftSegments, LEFT_ON);
-
 
     leftDisplayActive = false;
   }
@@ -245,10 +208,8 @@ void updateDisplay(void)
     // Turn both displays off
     sendToRegisters(rightSegments, BOTH_OFF);
 
-
     // Turn right display on
     sendToRegisters(rightSegments, RIGHT_ON);
-
 
     leftDisplayActive = true;
   }
@@ -257,4 +218,3 @@ void updateDisplay(void)
 {
     sendToRegisters(SEGMENTS[0], BOTH_OFF);
 }
-
