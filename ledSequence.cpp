@@ -6,6 +6,10 @@ void enqueueLed(int led) {
 
 int peekLed() {
   byte event;
+  byte e;
+  peekEvent(e);
+  Serial.print("peek: ");
+  Serial.println(e);
   if (peekEvent(event)) return event;
   return -1;
 }

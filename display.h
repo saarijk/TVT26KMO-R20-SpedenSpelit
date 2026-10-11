@@ -10,5 +10,5 @@ void showResult(byte result);
 
 void updateDisplay(void);
 void setScore(int score);
-void clearDisplay(void);
+
 #endif

@@ -1,4 +1,4 @@
-#include "MuistiSpeli.h"
+#include "SpedenSpelit.h"
 #include "buttons.h"
 #include "display.h"
 #include "eventQueue.h"
@@ -6,7 +6,7 @@
 #include "randomNumber.h"
 #include <util/atomic.h>
 
-volatile int buttonNumber = -1;
+//volatile int buttonNumber = -1;
 volatile bool newTimerInterrupt = false;
 
 namespace
@@ -27,7 +27,7 @@ void setup()
   clearAllLeds();
   initializeButtons();
   initializeDisplay();
-  // initializeEventQueue();
+  //initializeEventQueue();
   initializeRandomNumber();
   initializeTimer();
   Serial.begin(9600);
@@ -43,24 +43,9 @@ void loop()
     buttonNumber = -1;
   }
 
-  // Check button combinations before handling individual button events.
-  if (digitalRead(2) == LOW && digitalRead(5) == LOW)
-  {
-    startShow();
-    startTheGame();
-    return;
-  }
-
-  if (digitalRead(4) == LOW && digitalRead(3) == LOW)
-  {
-    startShow();
-    // NoppaSpeli(); // Noppapeli
-    return;
-  }
-
   if (pressedButton == 3)
   {
-    endShow1(5);
+    show2(5);
     startTheGame();
   }
 }

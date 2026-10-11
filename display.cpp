@@ -214,6 +214,7 @@ void setScore(int score)
 
   leftSegments = tensSegments;
   rightSegments = onesSegments;
+  updateDisplay();
 }
 
 
@@ -273,4 +274,5 @@ void updateDisplay(void)
 {
     sendToRegisters(SEGMENTS[0], BOTH_OFF);
 }
+
 

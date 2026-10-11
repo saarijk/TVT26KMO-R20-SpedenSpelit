@@ -39,7 +39,6 @@ bool dequeueEvent(byte& event)
 	queueTail = (queueTail + 1) % queueCapacity;
 	return true;
 }
-
 bool peekEvent(byte& event)
 {
 	if (queueTail == queueHead)
@@ -50,7 +49,6 @@ bool peekEvent(byte& event)
 	event = eventQueue[queueTail];
 	return true;
 }
-
 byte eventQueueSize()
 {
 	return (queueHead + queueCapacity - queueTail) % queueCapacity;
