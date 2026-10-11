@@ -31,9 +31,7 @@ void setLed(byte ledNumber)
             // do nothing?
             break;
     }
-
 }
-
 
 void clearAllLeds()
 {
@@ -82,6 +80,7 @@ void endShow1(int rounds)
     }
     //clearDisplay();
 }
+
 void startShow(int rounds)
 {
     // cycle through leds with increasing speed

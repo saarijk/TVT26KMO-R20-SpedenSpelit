@@ -4,6 +4,7 @@
 #include "buttons.h"
 #include "display.h"
 #include "leds.h"
+#include <util/atomic.h>
 
 bool gameOver = false;
 bool checkGame(int nappiPainettu, int& laskuri) { //checkGame himmeli
@@ -29,8 +30,8 @@ bool checkGame(int nappiPainettu, int& laskuri) { //checkGame himmeli
   }
   return gameOver;
 }
+
 void startTheGame() {
-  
   gameOver = false;
   initializeEventQueue(); 
   initializeRandomNumber();
@@ -47,7 +48,13 @@ void startTheGame() {
         setLed(uusiLed);
         enqueueLed(uusiLed);
     }
-    nappiPainettu = readButton(); 
+
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+      nappiPainettu = buttonNumber;
+      buttonNumber = -1;
+    }
+
     if (checkGame(nappiPainettu, laskuri)) {
       stopTimer();
       endShow1(5); // mikä ikinä nimeksi tulle. HUOM MUISTA MUUTTAA
@@ -55,6 +62,5 @@ void startTheGame() {
     }
   }
 }
-
 
 

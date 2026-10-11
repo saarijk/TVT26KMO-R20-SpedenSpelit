@@ -4,6 +4,7 @@ volatile int buttonNumber = -1;
 volatile int lastButtonState = -1;
 volatile unsigned long lastInterruptTime = 0;
 const unsigned long debounceDelay = 50;
+
 void initializeButtons(void)
 {
   pinMode(2, INPUT_PULLUP);
@@ -38,9 +39,10 @@ ISR(PCINT2_vect)
     else if (digitalRead(3) == LOW) buttonNumber = 1;
     else if (digitalRead(4) == LOW) buttonNumber = 2;
     else if (digitalRead(5) == LOW) buttonNumber = 3;
-    else buttonNumber = -1;   // kaikki HIGH
+    // leave the press latched until the main loop consumes it
 }
-int readButton() {
+
+/*int readButton() {
     static int previous = -1;
     int current = buttonNumber;
 
@@ -49,4 +51,4 @@ int readButton() {
 
     previous = current;
     return current;
-}
+}*/

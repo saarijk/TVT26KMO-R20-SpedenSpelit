@@ -46,7 +46,7 @@ void blink(int);
   int rounds: This parameter determines how many times 0,1,2,3 sequence
               is shown. 
 */
-void startShow();
+void startShow(int rounds);
 void endShow1(int rounds);
 void show2(int);
 
