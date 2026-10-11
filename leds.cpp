@@ -1,9 +1,11 @@
+#include "Arduino.h"
 #include "leds.h"
-
+#include "display.h"
 
 void initializeLeds()
+
 {
-    // initialise analog pins A2, A3, A4, A5 to be used as outputs
+    // initialise digital pins 6,7,9,10 to be used as outputs
     pinMode(6, OUTPUT);
     pinMode(7, OUTPUT);
     pinMode(9, OUTPUT);
@@ -33,7 +35,25 @@ void setLed(byte ledNumber)
     }
 
 }
+void blink(int led) {
+    static unsigned long flashStart = 0;
+    static bool flashing = false;
+    static int flashLed = -1;
 
+    if (!flashing) {
+        flashing = true;
+        flashLed = led;
+        flashStart = millis();
+        setLed(led);
+    }
+
+    if (flashing && millis() - flashStart > 120) {
+        clearAllLeds();
+        flashing = false;
+        flashLed = -1;
+    }
+}
+ 
 
 void clearAllLeds()
 {
@@ -54,38 +74,65 @@ void setAllLeds()
 }
 
 
-void show1()
+void startShow()
 {
-    // light up leds as binary representation of 0-15
-    // could use a loop: for each number, figure out which bits are 1
-    // turn the corresponding led on or off
-    // wait a bit and repeat
-
-    for (int i = 0; i < 16; i++)
+    static int i = 0;                  
+    static unsigned long previousMillis = 0;
+    static bool showRunning = true;
+    const unsigned long interval = 500;
+ 
+    if (!showRunning) {
+        return;
+    }
+ 
+    unsigned long currentMillis = millis();
+ 
+    if (currentMillis - previousMillis >= interval)
     {
+        previousMillis = currentMillis;
+ 
         clearAllLeds();
-
-        // check each bit of i and set corresponding led
+ 
         if (i & 0x01) setLed(0); // 1 = 0001
         if (i & 0x02) setLed(1); // 2 = 0010
         if (i & 0x04) setLed(2); // 4 = 0100
         if (i & 0x08) setLed(3); // 8 = 1000
-
-        delay(500);
+ 
+        i++;
+ 
+        if (i >= 16)
+        {
+            showRunning = false;
+        }
     }
 }
-
-void show2(int rounds)
+//Led Endshow for pressing wrong buttton or eventqueue sice get full
+void endShow1(int rounds)
 {
-    // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
     {
         for (int led = 0; led < 4; led++)
         {
             clearAllLeds();
             setLed(led);
-            // increase speed each round
-            delay(50 + 100 / (round + 1));
+
+            unsigned long startTime = millis();
+            unsigned long duration = 100 + 50 * round;
+
+            while (millis() - startTime < duration)
+            {
+                updateDisplay();
+            }
         }
     }
+    clearAllLeds();
+
+    //show score for 20sec after the game ends
+    unsigned long startTime = millis();
+
+    while (millis() - startTime < 20000UL)
+    {
+        updateDisplay();
+    }
+    clearDisplay();
 }
