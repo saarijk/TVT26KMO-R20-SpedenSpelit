@@ -1,6 +1,5 @@
 #ifndef SPEDENSPELIT_H
 #define SPEDENSPELIT_H
-
 #include <Arduino.h>
 
 // Shared gameplay API used by the game logic and Arduino entry points.

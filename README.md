@@ -15,6 +15,7 @@ This project demonstrates how embedded systems can be used to create interactive
 - Score tracking and increasing difficulty
 - Timer-based gameplay progression
 - End-of-game logic and restart flow
+- A dice game mode with queued rolls and automatic tallying after 15 rolls
 - Arduino/C++ implementation using modular hardware control files
 
 ## Hardware used
@@ -25,7 +26,7 @@ This project demonstrates how embedded systems can be used to create interactive
 - 7-segment display or digital output display
 - Supporting wiring and shift-register logic
 
-## How it works
+## SpedenSpelit game mode
 
 1. The game starts when the player triggers the start input.
 2. A random LED sequence is generated and displayed.
@@ -33,15 +34,29 @@ This project demonstrates how embedded systems can be used to create interactive
 4. Each successful round increases the score and speeds up the game.
 5. If the player makes a wrong input or the queue exceeds the limit, the game ends.
 
+## Dice game mode
+
+- Press button 1 (index 0) to enter the dice game.
+- Press button 2 (index 1) to roll a six-sided die. The LEDs show the roll number in binary.
+- Press button 3 (index 2) to display the sum and empty the roll queue.
+- After 15 rolls, the sum is displayed and the queue is emptied automatically.
+- Press button 4 (index 3) to switch to the SpedenSpelit game.
+
 ## Project structure
 
-- `SpedenSpelit.ino` – main program loop and setup, timer logic
-- `SpedenSpelit.cpp` – main gameplay logic
-- `buttons.*` – button input handling
-- `leds.*` – LED control and visual effects
-- `display.*` – score/output display functions
-- `event_queue.*` – queue management for game events
-- `MuistiSpeli.*` and related modules – supporting game logic and sequence handling for an extra game mode
+The project currently contains two game modes: the original SpedenSpelit reaction game and a dice game. The files are organized by responsibility:
+
+- `SpedenSpelit.ino` / `SpedenSpelit.h` – Arduino setup and main loop, game-mode selection, timer configuration and control, and timer interrupt declaration
+- `SpedenSpelit.cpp` – gameplay loop, input checking, scoring, difficulty progression, and game-over handling
+- `diceGame.cpp` / `diceGame.h` – dice game mode; button 1 (index 0) starts it, button 2 rolls, button 3 totals and clears the rolls, and button 4 switches to SpedenSpelit. The total is also shown and cleared automatically after 15 rolls.
+- `buttons.cpp` / `buttons.h` – button initialization and input handling
+- `leds.cpp` / `leds.h` – LED initialization, control, and visual effects
+- `display.cpp` / `display.h` – score and other output display functions
+- `randomNumber.cpp` / `randomNumber.h` – random LED selection
+- `eventQueue.cpp` / `eventQueue.h` – circular FIFO queue for game events
+- `ledSequence.cpp` / `ledSequence.h` – LED-specific helpers that use the event queue
+- `OuputsAndSegments.md` – notes about outputs and display segments
+
 
 ## Getting started
 

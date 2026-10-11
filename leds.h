@@ -1,14 +1,13 @@
 #ifndef LEDS_H
 #define LEDS_H
-
-#include <Arduino.h>
+#include <arduino.h>
 
 void initializeLeds();
 void setLed(byte ledNumber);
-void clearAllLeds();
-void setAllLeds();
-void blink(int led);
-void startShow();
-void endShow1(int rounds);
+void clearAllLeds(void);
+void setAllLeds(void);
+void startShow(int);
+void endShow1(int);
+void show2(int);
 
 #endif

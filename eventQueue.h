@@ -1,6 +1,5 @@
-#ifndef EVENT_QUEUE_H
-#define EVENT_QUEUE_H
-
+#ifndef EVENTQUEUE_H
+#define EVENTQUEUE_H
 #include <Arduino.h>
 
 void initializeEventQueue();

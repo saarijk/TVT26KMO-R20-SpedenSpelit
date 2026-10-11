@@ -2,27 +2,30 @@
 #include "ledSequence.h"
 #include "randomNumber.h"
 #include "buttons.h"
-//#include "Start_game.h" // unkommataan, kun pelin aloitus on valmis
-//#include "endgame.h" //unkommataan, kun pelin päättyminen lisätty 
 #include "display.h"
 #include "leds.h"
-
-
+#include <util/atomic.h>
 
 bool gameOver = false;
-bool checkGame(int pressedButton, int& counter, int& speed) { //checkGame himmeli. Pyörähtää aina napin painalluksella niin kauan kunhan eventQueySize on alle 30
 
-  int ledValue = peekLed();
+// check the button press, update the score, and detect game over
+bool checkGame(int nappiPainettu, int& laskuri, unsigned long& ledOnDuration) {
 
-  if (ledValue != -1 && ledValue == pressedButton) { // jos oikea painallus
-    dequeueLed(); //paukautetaan jonosta seuraava
-    counter++;
-    setScore(counter); // päivitetään näytölle pisteet. Nimeäminen mitä ikinä Eetu keksii display.h nimetä.
+  int ledArvo = peekLed();
 
-    if (counter % 10 == 0) // jos 10 oikeaa painallusta, niin peli nopeutuu
+  if (ledArvo != -1 && ledArvo == nappiPainettu) {
+    dequeueLed();
+    laskuri++;
+    setScore(laskuri);
+    if (laskuri % 10 == 0)
     {
-      speed = max(100, (int)(speed * 0.9)); // ledejen vilkkuminen. Ei varmuutta toimiiko näin vai pitääkö muuttaa esim "- 100"
+      speedUpTimer();
+      ledOnDuration = max(100UL, (ledOnDuration * 9UL) / 10UL);
     }
+  }
+
+  if (ledArvo != -1 && nappiPainettu != -1 && ledArvo != nappiPainettu) {
+    gameOver = true;
   }
 
   if (eventQueueSize() > 30) {
@@ -30,28 +33,59 @@ bool checkGame(int pressedButton, int& counter, int& speed) { //checkGame himmel
   }
   return gameOver;
 }
+
+// initialize and run the game until the player makes a mistake or the queue fills
 void startTheGame() {
-  
-  initializeLeds();
-  initButtonsAndButtonInterrupts(); //näytön alustus tulleepi tähän. MUISTA TÄYDENTÄÄ!! initButtonsAndButtonInterrupts
-  initializeEventQueue(); // initialize queue
+  gameOver = false;
+  initializeEventQueue(); 
   initializeRandomNumber();
-  unsigned long elapsedTime = 0;
-  int speed = 1000;
-  int counter = 0;
+  startTimer();
+  int nappiPainettu = -1;
+  int laskuri = 0;
+  unsigned long ledOnDuration = 1000UL;
+  unsigned long ledTurnedOnAt = 0;
+  bool ledIsOn = false;
 
   while (!gameOver) {
-    if (millis() - elapsedTime > speed) {
-      enqueueLed(getRandomLed());
-      elapsedTime = millis();
+    setScore(laskuri);
+    bool timerElapsed;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+      timerElapsed = newTimerInterrupt;
+      newTimerInterrupt = false;
     }
-    int pressedButton = readButton();  // Mikaelin tekemä buttons.cppn funktio mikä tuo painetun napin. NIMETTÄVÄ UUDELLEEN LUULTAVASTI
-    if (checkGame(pressedButton, counter, speed)) {
-      endShow1(5); // HUOM muista nimetä uudelleen valoshown mukaan
+
+    if (timerElapsed) {
+      int uusiLed = getRandomLed();
+      clearAllLeds();
+      setLed(uusiLed);
+      enqueueLed(uusiLed);
+      ledTurnedOnAt = millis();
+      ledIsOn = true;
+    }
+
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+      nappiPainettu = buttonNumber;
+      buttonNumber = -1;
+    }
+
+    int previousScore = laskuri;
+    bool isGameOver = checkGame(nappiPainettu, laskuri, ledOnDuration);
+    if (laskuri > previousScore) {
+      clearAllLeds();
+      ledIsOn = false;
+    }
+
+    if (ledIsOn && millis() - ledTurnedOnAt >= ledOnDuration) {
+      clearAllLeds();
+      ledIsOn = false;
+    }
+
+    if (isGameOver) {
+      stopTimer();
+      endShow1(5);
       break;
     }
   }
 }
-
-
-

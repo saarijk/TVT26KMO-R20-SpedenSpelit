@@ -1,12 +1,12 @@
-#include "MuistiSpeli.h"
+#include "SpedenSpelit.h"
 #include "buttons.h"
 #include "display.h"
+#include "diceGame.h"
 #include "eventQueue.h"
 #include "leds.h"
 #include "randomNumber.h"
 #include <util/atomic.h>
 
-volatile int buttonNumber = -1;
 volatile bool newTimerInterrupt = false;
 
 namespace
@@ -27,15 +27,15 @@ void setup()
   clearAllLeds();
   initializeButtons();
   initializeDisplay();
-  // initializeEventQueue();
   initializeRandomNumber();
   initializeTimer();
   Serial.begin(9600);
 }
 
-// read the latest button event and handle a game start or player input
+// route start and gameplay button presses to the selected game mode
 void loop()
 {
+  
   int pressedButton;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   {
@@ -43,26 +43,29 @@ void loop()
     buttonNumber = -1;
   }
 
-  // Check button combinations before handling individual button events.
-  if (digitalRead(2) == LOW && digitalRead(5) == LOW)
+  if (isDiceGameActive())
   {
-    startShow();
+    if (pressedButton == 3)
+    {
+      stopDiceGame();
+      startShow(5);
+      startTheGame();
+    }
+    else
+    {
+      handleDiceGameButton(pressedButton);
+    }
+  }
+  else if (pressedButton == 0)
+  {
+    startDiceGame();
+  }
+  else if (pressedButton == 3)
+  {
+    startShow(5);
     startTheGame();
-    return;
   }
-
-  if (digitalRead(4) == LOW && digitalRead(3) == LOW)
-  {
-    startShow();
-    // NoppaSpeli(); // Noppapeli
-    return;
-  }
-
-  if (pressedButton == 3)
-  {
-    endShow1(5);
-    startTheGame();
-  }
+  updateDisplay();
 }
 
 // configure Timer1 but leave it stopped until a game starts
@@ -125,5 +128,3 @@ ISR(TIMER1_COMPA_vect)
 {
   newTimerInterrupt = true; 
 }
-
-// checkGame, initializeGame, startTheGame siirretty SpedenSpelit.cpp:hen
