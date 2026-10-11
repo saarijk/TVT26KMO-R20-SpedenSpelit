@@ -49,6 +49,7 @@ void loop()
       startShow(5);
       startTheGame();
   }
+  updateDisplay();
 }
 
 // configure Timer1 but leave it stopped until a game starts
