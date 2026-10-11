@@ -7,21 +7,22 @@
 #include <util/atomic.h>
 
 bool gameOver = false;
-bool checkGame(int nappiPainettu, int& laskuri) { //checkGame himmeli
+bool checkGame(int nappiPainettu, int& laskuri, unsigned long& ledOnDuration) {
 
   int ledArvo = peekLed();
 
-  if (ledArvo != -1 && ledArvo == nappiPainettu) { 
-    dequeueLed(); 
+  if (ledArvo != -1 && ledArvo == nappiPainettu) {
+    dequeueLed();
     laskuri++;
     setScore(laskuri);
     if (laskuri % 10 == 0)
     {
       speedUpTimer();
+      ledOnDuration = max(100UL, (ledOnDuration * 9UL) / 10UL);
     }
   }
 
-  if (ledArvo != -1 && nappiPainettu != -1 && ledArvo != nappiPainettu) { 
+  if (ledArvo != -1 && nappiPainettu != -1 && ledArvo != nappiPainettu) {
     gameOver = true;
   }
 
@@ -38,15 +39,26 @@ void startTheGame() {
   startTimer();
   int nappiPainettu = -1;
   int laskuri = 0;
+  unsigned long ledOnDuration = 1000UL;
+  unsigned long ledTurnedOnAt = 0;
+  bool ledIsOn = false;
 
   while (!gameOver) {
     setScore(laskuri);
-    if (newTimerInterrupt) {
-        newTimerInterrupt = false;
-        int uusiLed = getRandomLed();
-        clearAllLeds();
-        setLed(uusiLed);
-        enqueueLed(uusiLed);
+    bool timerElapsed;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+      timerElapsed = newTimerInterrupt;
+      newTimerInterrupt = false;
+    }
+
+    if (timerElapsed) {
+      int uusiLed = getRandomLed();
+      clearAllLeds();
+      setLed(uusiLed);
+      enqueueLed(uusiLed);
+      ledTurnedOnAt = millis();
+      ledIsOn = true;
     }
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -55,12 +67,23 @@ void startTheGame() {
       buttonNumber = -1;
     }
 
-    if (checkGame(nappiPainettu, laskuri)) {
+    int previousScore = laskuri;
+    bool isGameOver = checkGame(nappiPainettu, laskuri, ledOnDuration);
+    if (laskuri > previousScore) {
+      clearAllLeds();
+      ledIsOn = false;
+    }
+
+    if (ledIsOn && millis() - ledTurnedOnAt >= ledOnDuration) {
+      clearAllLeds();
+      ledIsOn = false;
+    }
+
+    if (isGameOver) {
       stopTimer();
       endShow1(5); // mikä ikinä nimeksi tulle. HUOM MUISTA MUUTTAA
       break;
     }
   }
 }
-
 
