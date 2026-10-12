@@ -31,7 +31,7 @@ This project demonstrates how embedded systems can be used to create interactive
 1. The game starts when the player triggers the start input.
 2. A random LED sequence is generated and displayed.
 3. The player must press matching buttons in the correct order.
-4. Each successful round increases the score and speeds up the game.
+4. Each button press increases the score and every ten correct presses speeds up the game.
 5. If the player makes a wrong input or the queue exceeds the limit, the game ends.
 
 ## Dice game mode
