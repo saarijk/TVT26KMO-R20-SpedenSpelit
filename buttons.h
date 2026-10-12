@@ -1,12 +1,12 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
+#include <arduino.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
-#include <Arduino.h>
+extern volatile int buttonNumber;
 
-void initializeButtons();
-
-byte readButton();
-
-bool startButtonsPressed();
+void initializeButtons(void);
+//int readButton();
 
 #endif
