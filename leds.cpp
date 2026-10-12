@@ -3,7 +3,7 @@
 
 void initializeLeds()
 {
-    // initialise analog pins A2, A3, A4, A5 to be used as outputs
+    // initialise Digital pins 6,7,9 and 10 to be used as outputs
     pinMode(6, OUTPUT);
     pinMode(7, OUTPUT);
     pinMode(9, OUTPUT);
@@ -73,33 +73,6 @@ void endShow1(int rounds)
     }
     clearAllLeds();
 
-    //show score for 20sec after the game ends
-    // unsigned long startTime = millis();
-
-    // while (millis() - startTime < 10000UL)
-    // {
-    //     updateDisplay();
-    // }
-    //clearDisplay();
-}
-// void blink(int led) {
-//     static unsigned long flashStart = 0;
-//     static bool flashing = false;
-//     static int flashLed = -1;
-
-//     if (!flashing) {
-//         flashing = true;
-//         flashLed = led;
-//         flashStart = millis();
-//         setLed(led);
-//     }
-
-//     if (flashing && millis() - flashStart > 200) {
-//         clearAllLeds();
-//         flashing = false;
-//         flashLed = -1;
-//     }
-// }
 void startShow(int rounds)
 {
     // cycle through leds with increasing speed
