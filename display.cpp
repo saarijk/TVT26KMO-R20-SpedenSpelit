@@ -65,10 +65,7 @@ void sendByte(uint8_t data)
 }
 
 
-// ============================================================
 // Send two bytes to the two 74HC595 circuits
-// ============================================================
-
 void sendToRegisters(uint8_t segmentData, uint8_t displayData)
 {
   // LATCH LOW
@@ -84,29 +81,20 @@ void sendToRegisters(uint8_t segmentData, uint8_t displayData)
   PORTB |= (1 << LATCH_PIN);
 }
 
-
-// ============================================================
 // Initialize display
-// ============================================================
-
 void initializeDisplay(void)
 {
   // D8, D11 and D12 as outputs
-
   DDRB |= (1 << LATCH_PIN);
   DDRB |= (1 << DATA_PIN);
   DDRB |= (1 << CLOCK_PIN);
 
-
   // Initial states
-
   PORTB &= ~(1 << LATCH_PIN);
   PORTB &= ~(1 << DATA_PIN);
   PORTB &= ~(1 << CLOCK_PIN);
 
-
   // Both displays off
-
   sendToRegisters(SEGMENTS[0], BOTH_OFF);
 
 
@@ -114,10 +102,8 @@ void initializeDisplay(void)
 }
 
 
-// ============================================================
-// Write one digit
-// ============================================================
 
+// Write one digit
 void writeByte(uint8_t number, bool last)
 {
   if (number > 9)
@@ -146,10 +132,8 @@ void writeByte(uint8_t number, bool last)
 }
 
 
-// ============================================================
-// Set two digits
-// ============================================================
 
+// Set two digits
 void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
 {
   if (tens > 9)
@@ -168,10 +152,8 @@ void writeHighAndLowNumber(uint8_t tens, uint8_t ones)
 }
 
 
-// ============================================================
-// Set score
-// ============================================================
 
+// Set score
 void setScore(int score)
 {
   if (score < 0)
@@ -195,7 +177,6 @@ void setScore(int score)
 
   // 100...199
   // Decimal point on left display
-
   if (score >= 100 && score < 200)
   {
     tensSegments |= SEGMENTS[10];
@@ -204,7 +185,6 @@ void setScore(int score)
 
   // 200 or more
   // Decimal point on both displays
-
   if (score >= 200)
   {
     tensSegments |= SEGMENTS[10];
@@ -217,18 +197,13 @@ void setScore(int score)
   updateDisplay();
 }
 
-
-// ============================================================
 // Show result
-// ============================================================
-
 void showResult(byte result)
 {
   setScore(result);
 }
 
 // Update display
-
 void updateDisplay(void)
 {
   static unsigned long lastDisplayUpdate = 0;
