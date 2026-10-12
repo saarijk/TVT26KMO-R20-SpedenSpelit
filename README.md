@@ -64,3 +64,15 @@ The project currently contains two game modes: the original SpedenSpelit reactio
 2. Connect the required hardware according to the project wiring.
 3. Compile and upload the sketch to the Arduino board.
 4. Start the game and follow the LED pattern.
+
+## Pictures
+<img width="1757" height="1032" alt="image" src="https://github.com/user-attachments/assets/59a631c6-56ba-4d00-baff-f6534a82301e" />
+
+<img width="560" height="796" alt="image" src="https://github.com/user-attachments/assets/37d21f7e-242e-45e1-adda-b57a9dc41afe" />
+<img width="1041" height="800" alt="image" src="https://github.com/user-attachments/assets/884d7ab7-c75f-41ae-84dd-868e5ffa0c37" />
+<img width="1494" height="605" alt="image" src="https://github.com/user-attachments/assets/8cd53513-edab-46cc-be37-59b5e73fa036" />
+<img width="1559" height="1096" alt="image" src="https://github.com/user-attachments/assets/ccf3e7ed-6c82-4795-a1c2-d6f8ddd3e12f" />
+
+
+
+
