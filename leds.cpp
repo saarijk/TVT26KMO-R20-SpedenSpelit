@@ -1,5 +1,5 @@
 #include "leds.h"
-
+#include "display.h"
 
 void initializeLeds()
 {
@@ -53,29 +53,54 @@ void setAllLeds()
     digitalWrite(10, HIGH);
 }
 
-
-void show1()
+void endShow1(int rounds)
 {
-    // light up leds as binary representation of 0-15
-    // could use a loop: for each number, figure out which bits are 1
-    // turn the corresponding led on or off
-    // wait a bit and repeat
-
-    for (int i = 0; i < 16; i++)
+    for (int round = 0; round < rounds; round++)
     {
-        clearAllLeds();
+        for (int led = 0; led < 4; led++)
+        {
+            clearAllLeds();
+            setLed(led);
 
-        // check each bit of i and set corresponding led
-        if (i & 0x01) setLed(0); // 1 = 0001
-        if (i & 0x02) setLed(1); // 2 = 0010
-        if (i & 0x04) setLed(2); // 4 = 0100
-        if (i & 0x08) setLed(3); // 8 = 1000
+            unsigned long startTime = millis();
+            unsigned long duration = 100 + 50 * round;
 
-        delay(500);
+            while (millis() - startTime < duration)
+            {
+                updateDisplay();
+            }
+        }
     }
-}
+    clearAllLeds();
 
-void show2(int rounds)
+    //show score for 20sec after the game ends
+    // unsigned long startTime = millis();
+
+    // while (millis() - startTime < 10000UL)
+    // {
+    //     updateDisplay();
+    // }
+    //clearDisplay();
+}
+// void blink(int led) {
+//     static unsigned long flashStart = 0;
+//     static bool flashing = false;
+//     static int flashLed = -1;
+
+//     if (!flashing) {
+//         flashing = true;
+//         flashLed = led;
+//         flashStart = millis();
+//         setLed(led);
+//     }
+
+//     if (flashing && millis() - flashStart > 200) {
+//         clearAllLeds();
+//         flashing = false;
+//         flashLed = -1;
+//     }
+// }
+void startShow(int rounds)
 {
     // cycle through leds with increasing speed
     for (int round = 0; round < rounds; round++)
@@ -88,4 +113,5 @@ void show2(int rounds)
             delay(50 + 100 / (round + 1));
         }
     }
+    clearAllLeds();
 }

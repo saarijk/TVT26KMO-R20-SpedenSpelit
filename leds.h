@@ -5,7 +5,7 @@
 /*
   initializeLeds() subroutine intializes analog pins A2,A3,A4,A5
   to be used as outputs. Speden Spelit leds are connected to those
-  pins. Uusi testi  
+  pins.  
 */
 void initializeLeds();
 
@@ -35,8 +35,8 @@ void setAllLeds(void);
   show1() subroutine shows numbers 0,1,...,15 as binary numbers
   waits a bit and repeats number "show"
 */
-void show1(void);
-
+// void show1();
+// void blink(int);
 /*
   show2(int) subroutine shows leds 0,1,2,3,0,1,2,3,.... with increasing
   changing rate. And when top change speed has been reached
@@ -46,6 +46,8 @@ void show1(void);
   int rounds: This parameter determines how many times 0,1,2,3 sequence
               is shown. 
 */
-void show2(int);
+//bool startShow();
+void endShow1(int rounds);
+void startShow(int);
 
 #endif
